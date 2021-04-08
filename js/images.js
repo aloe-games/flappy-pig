@@ -1,15 +1,14 @@
-function loadImages(imagefiles, callback) {
-    let loadedImages = [];
-    for (let i = 0; i < imagefiles.length; i++) {
-        let image = new Image();
-
-        if (i === imagefiles.length - 1) {
-            image.onload = callback;
-        }
-
-        image.src = imagefiles[i];
-        loadedImages[i] = image;
+function loadImages(imagePaths, callback) {
+    let images = [];
+    for (let i = 0; i < imagePaths.length; i++) {
+        images[i] = new Image();
     }
-
-    return loadedImages;
+    for (let i = 0; i < imagePaths.length - 1; i++) {
+        images[i].onload = function () {
+            images[i + 1].src = imagePaths[i + 1];
+        }
+    }
+    images[imagePaths.length - 1].onload = callback;
+    images[0].src = imagePaths[0];
+    return images;
 }
