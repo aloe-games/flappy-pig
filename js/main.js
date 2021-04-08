@@ -55,10 +55,12 @@ function resetGame() {
     player.x = (canvas.width - player.image.width) / 2;
     player.y = (canvas.height - grassImage.height - player.image.height) / 2;
 }
+
 resetGame();
 
 let cactusCount = 100;
 let cacti = [];
+
 function generateCacti() {
     cacti = [];
     for (let i = 0; i < cactusCount; i++) {
@@ -71,6 +73,7 @@ function generateCacti() {
         cacti.push(cactus);
     }
 }
+
 generateCacti();
 
 function drawBackground() {
