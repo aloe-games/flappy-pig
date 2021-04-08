@@ -1,25 +1,25 @@
 // Image loading global variables
-var loadcount = 0;
-var loadtotal = 0;
-var preloaded = false;
+let loadCount = 0;
+let loadTotal = 0;
+let preloaded = false;
  
 // Load images
 function loadImages(imagefiles) {
     // Initialize variables
-    loadcount = 0;
-    loadtotal = imagefiles.length;
+    loadCount = 0;
+    loadTotal = imagefiles.length;
     preloaded = false;
  
     // Load the images
-    var loadedimages = [];
-    for (var i=0; i<imagefiles.length; i++) {
+    let loadedImages = [];
+    for (let i=0; i<imagefiles.length; i++) {
         // Create the image object
-        var image = new Image();
+        let image = new Image();
  
         // Add onload event handler
         image.onload = function () {
-            loadcount++;
-            if (loadcount == loadtotal) {
+            loadCount++;
+            if (loadCount === loadTotal) {
                 // Done loading
                 preloaded = true;
             }
@@ -29,9 +29,9 @@ function loadImages(imagefiles) {
         image.src = imagefiles[i];
  
         // Save to the image array
-        loadedimages[i] = image;
+        loadedImages[i] = image;
     }
  
     // Return an array of images
-    return loadedimages;
+    return loadedImages;
 }
