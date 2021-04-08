@@ -17,6 +17,9 @@ let grassImage = images[1];
 let cactusImage = images[3];
 let cactusReverseImage = images[4];
 
+const GameStates = Object.freeze({NOT_STARTED: 1, PLAYING: 2, LOST: 3, WON: 4});
+let gameState = GameStates.NOT_STARTED;
+
 let positionOffset = 0;
 let backgroundParallax = 0.75;
 
@@ -46,20 +49,29 @@ let player = {
     }
 };
 
-player.x = (canvas.width - player.image.width) / 2;
-player.y = (canvas.height - grassImage.height - player.image.height) / 2;
+function resetGame() {
+    positionOffset = 0;
+    score = 0;
+    player.x = (canvas.width - player.image.width) / 2;
+    player.y = (canvas.height - grassImage.height - player.image.height) / 2;
+}
+resetGame();
 
 let cactusCount = 100;
 let cacti = [];
-for (let i = 0; i < cactusCount; i++) {
-    let gap = 200 - i;
-    let cactus = {
-        x: (canvas.width / 2 - i) * (i + 2),
-        top: (canvas.height - grassImage.height - gap) / 2 + Math.floor((Math.random() * 100) + 1)  - 50,
-        gap: gap
-    };
-    cacti.push(cactus);
+function generateCacti() {
+    cacti = [];
+    for (let i = 0; i < cactusCount; i++) {
+        let gap = 200 - i;
+        let cactus = {
+            x: (canvas.width / 2 - i) * (i + 2),
+            top: (canvas.height - grassImage.height - gap) / 2 + Math.floor((Math.random() * 100) + 1) - 50,
+            gap: gap
+        };
+        cacti.push(cactus);
+    }
 }
+generateCacti();
 
 function drawBackground() {
     ctx.drawImage(backgroundImage, -((positionOffset * backgroundParallax) % backgroundImage.width), 0);
@@ -89,6 +101,24 @@ function drawScore() {
     ctx.fillText(score.toString(), canvas.width - 8, 32);
 }
 
+function drawGameState() {
+    let text = "";
+    if (gameState === GameStates.NOT_STARTED) {
+        text = "Click to start!"
+    }
+    if (gameState === GameStates.LOST) {
+        text = "GAME OVER!"
+    }
+    if (gameState === GameStates.WON) {
+        text = "You WON!"
+    }
+
+    ctx.font = "bold 32px Trebuchet MS";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(text, canvas.width / 2, (canvas.height - 32) / 2);
+}
+
 function collisionGrass() {
     return canvas.height - grassImage.height < player.y + player.image.height;
 }
@@ -104,13 +134,13 @@ function collisionCactus() {
     let rectCollision = player.x + player.image.width >= cactus.x &&
         player.x <= cactus.x + cactusImage.width &&
         (player.y <= cactus.top - cactusRadius || player.y + player.image.height >= cactus.top + cactus.gap + cactusRadius);
-    let topMiddle = {x: cactus.x + cactusRadius, y: cactus.top - cactusRadius}; 
+    let topMiddle = {x: cactus.x + cactusRadius, y: cactus.top - cactusRadius};
     let topDistance = Math.sqrt(Math.pow(player.x + playerRadius - topMiddle.x, 2) + Math.pow(player.y + playerRadius - topMiddle.y, 2));
     let bottomMiddle = {x: cactus.x + cactusRadius, y: cactus.top + cactus.gap + cactusRadius};
     let bottomDistance = Math.sqrt(Math.pow(player.x + playerRadius - bottomMiddle.x, 2) + Math.pow(player.y + playerRadius - bottomMiddle.y, 2));
 
     let radialCollision = topDistance <= cactusRadius + playerRadius || bottomDistance <= cactusRadius + playerRadius;
-    
+
     return rectCollision || radialCollision;
 }
 
@@ -119,11 +149,21 @@ function collision() {
 }
 
 function draw() {
-    positionOffset += defaultDx;
-    player.move();
-    
-    if (player.x > cacti[score].x + cactusImage.width) {
-        score++;
+    if (gameState === GameStates.PLAYING) {
+        positionOffset += defaultDx;
+        player.move();
+
+        if (collision()) {
+            failSound.play();
+            gameState = GameStates.LOST;
+        }
+
+        if (player.x > cacti[score].x + cactusImage.width) {
+            score++;
+            if (score === cacti.length) {
+                gameState = GameStates.WON;
+            }
+        }
     }
 
     drawBackground();
@@ -131,17 +171,19 @@ function draw() {
     drawGrass();
     player.draw();
     drawScore();
-
-    if (collision()) {
-        failSound.play();
-        alert("GAME OVER");
-        document.location.reload();
-    }
+    drawGameState();
 
     requestAnimationFrame(draw);
 }
 
 canvas.addEventListener("click", function () {
+    if (gameState !== GameStates.PLAYING) {
+        if (gameState === GameStates.LOST || gameState === GameStates.WON) {
+            resetGame();
+            generateCacti();
+        }
+        gameState = GameStates.PLAYING;
+    }
     jumpSound[jumpChannel++ % 2].play();
     player.jump();
 });
