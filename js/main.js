@@ -1,7 +1,7 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let images = loadImages(["img/background.png", "img/grass.png", "img/player.png", "img/cactus.png", "img/cactus_revert.png"]);
+let images = loadImages(["img/background.png", "img/grass.png", "img/player.png", "img/cactus.png", "img/cactus_revert.png"], startGame);
 
 let jumpChannel = 0;
 let jumpSound = [document.getElementById("jump"), document.getElementById("jump2")];
@@ -56,8 +56,6 @@ function resetGame() {
     player.y = (canvas.height - grassImage.height - player.image.height) / 2;
 }
 
-resetGame();
-
 let cactusCount = 100;
 let cacti = [];
 
@@ -73,8 +71,6 @@ function generateCacti() {
         cacti.push(cactus);
     }
 }
-
-generateCacti();
 
 function drawBackground() {
     ctx.drawImage(backgroundImage, -((positionOffset * backgroundParallax) % backgroundImage.width), 0);
@@ -119,7 +115,7 @@ function drawGameState() {
     ctx.font = "bold 32px Trebuchet MS";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.fillText(text, canvas.width / 2, (canvas.height - 32) / 2);
+    ctx.fillText(text, canvas.width / 2, (canvas.height - grassImage.height) / 2 - player.image.height);
 }
 
 function collisionGrass() {
@@ -190,4 +186,9 @@ canvas.addEventListener("click", function () {
     jumpSound[jumpChannel++ % 2].play();
     player.jump();
 });
-draw();
+
+function startGame() {
+    resetGame();
+    generateCacti();
+    draw();
+}
