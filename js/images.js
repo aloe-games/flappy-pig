@@ -8,7 +8,8 @@ function loadImages(imagePaths, callback) {
             images[i + 1].src = imagePaths[i + 1];
         }
     }
-    images[imagePaths.length - 1].onload = callback;
+    images[imagePaths.length - 1].onload = function () {
+        callback(images)
+    };
     images[0].src = imagePaths[0];
-    return images;
 }

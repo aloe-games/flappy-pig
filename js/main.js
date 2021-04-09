@@ -1,8 +1,6 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let images = loadImages(["img/background.png", "img/grass.png", "img/player.png", "img/cactus.png", "img/cactus_revert.png"], startGame);
-
 let jumpChannel = 0;
 let jumpSound = [document.getElementById("jump"), document.getElementById("jump2")];
 let failSound = document.getElementById("fail");
@@ -11,11 +9,11 @@ jumpSound[0].volume = jumpVolume;
 jumpSound[1].volume = jumpVolume;
 failSound.volume = jumpVolume * 2;
 
-let backgroundImage = images[0];
-let grassImage = images[1];
+let backgroundImage;
+let grassImage;
 
-let cactusImage = images[3];
-let cactusReverseImage = images[4];
+let cactusImage;
+let cactusReverseImage;
 
 const GameStates = Object.freeze({NOT_STARTED: 1, PLAYING: 2, LOST: 3, WON: 4});
 let gameState = GameStates.NOT_STARTED;
@@ -27,27 +25,7 @@ let score = 0;
 
 let defaultDy = 2;
 let defaultDx = 3;
-let player = {
-    x: 0,
-    y: 0,
-    dx: defaultDx,
-    dy: defaultDy,
-    move: function () {
-        this.x += this.dx;
-        this.y += this.dy;
-
-        if (this.dy < defaultDy) {
-            this.dy += 0.5;
-        }
-    },
-    image: images[2],
-    draw: function () {
-        ctx.drawImage(this.image, this.x - positionOffset, this.y);
-    },
-    jump: function () {
-        this.dy = -4 * defaultDy;
-    }
-};
+let player;
 
 function resetGame() {
     positionOffset = 0;
@@ -187,8 +165,38 @@ canvas.addEventListener("click", function () {
     player.jump();
 });
 
-function startGame() {
+function startGame(images) {
+    backgroundImage = images[0];
+    grassImage = images[1];
+
+    cactusImage = images[3];
+    cactusReverseImage = images[4];
+
+    player = {
+        x: 0,
+        y: 0,
+        dx: defaultDx,
+        dy: defaultDy,
+        move: function () {
+            this.x += this.dx;
+            this.y += this.dy;
+
+            if (this.dy < defaultDy) {
+                this.dy += 0.5;
+            }
+        },
+        image: images[2],
+        draw: function () {
+            ctx.drawImage(this.image, this.x - positionOffset, this.y);
+        },
+        jump: function () {
+            this.dy = -4 * defaultDy;
+        }
+    };
+
     resetGame();
     generateCacti();
     draw();
 }
+
+loadImages(["img/background.png", "img/grass.png", "img/player.png", "img/cactus.png", "img/cactus_revert.png"], startGame);
