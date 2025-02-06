@@ -19,11 +19,16 @@ let defaultDy = 2;
 let defaultDx = 3;
 let player;
 
+let frame = 0;
+let step = 0;
+
 function resetGame() {
     positionOffset = 0;
     score = 0;
     player.x = (canvas.width - player.image.width) / 2;
     player.y = (canvas.height - grassImage.height - player.image.height) / 2;
+    frame = 0;
+    step = 0;
 }
 
 let cactusCount = 100;
@@ -124,12 +129,22 @@ function draw() {
         gameState = GameStates.PLAYING;
     }
 
+    if (frame % 3 === 0) {
+        let observations = [
+            cacti[score].x - (player.x + player.image.width),
+            cacti[score].top + cacti[score].gap - (player.y + player.image.height)
+        ];
+        console.log(observations)
+        step++;
+    }
+
     drawBackground();
     drawCacti();
     drawGrass();
     player.draw();
     drawScore();
 
+    frame++;
     requestAnimationFrame(draw);
 }
 
