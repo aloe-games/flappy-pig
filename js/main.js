@@ -22,6 +22,11 @@ let player;
 let frame = 0;
 let step = 0;
 
+let agent = {
+    w: [0., -1.],
+    b: 10.
+};
+
 function resetGame() {
     positionOffset = 0;
     score = 0;
@@ -134,7 +139,10 @@ function draw() {
             cacti[score].x - (player.x + player.image.width),
             cacti[score].top + cacti[score].gap - (player.y + player.image.height)
         ];
-        console.log(observations)
+        let action = (observations[0] * agent.w[0] + observations[1] * agent.w[1] + agent.b) > 0.;
+        if (action) {
+            player.jump();
+        }
         step++;
     }
 
@@ -147,10 +155,6 @@ function draw() {
     frame++;
     requestAnimationFrame(draw);
 }
-
-canvas.addEventListener("click", function () {
-    player.jump();
-});
 
 function startGame(images) {
     backgroundImage = images[0];
