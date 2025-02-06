@@ -116,6 +116,14 @@ function draw() {
         }
     }
 
+    if (gameState !== GameStates.PLAYING) {
+        if (gameState === GameStates.LOST || gameState === GameStates.WON) {
+            resetGame();
+            generateCacti();
+        }
+        gameState = GameStates.PLAYING;
+    }
+
     drawBackground();
     drawCacti();
     drawGrass();
@@ -126,13 +134,6 @@ function draw() {
 }
 
 canvas.addEventListener("click", function () {
-    if (gameState !== GameStates.PLAYING) {
-        if (gameState === GameStates.LOST || gameState === GameStates.WON) {
-            resetGame();
-            generateCacti();
-        }
-        gameState = GameStates.PLAYING;
-    }
     player.jump();
 });
 
