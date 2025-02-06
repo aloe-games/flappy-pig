@@ -70,24 +70,6 @@ function drawScore() {
     ctx.fillText(score.toString(), canvas.width - 8, 32);
 }
 
-function drawGameState() {
-    let text = "";
-    if (gameState === GameStates.NOT_STARTED) {
-        text = "Click to start!"
-    }
-    if (gameState === GameStates.LOST) {
-        text = "GAME OVER!"
-    }
-    if (gameState === GameStates.WON) {
-        text = "You WON!"
-    }
-
-    ctx.font = "bold 32px Trebuchet MS";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(text, canvas.width / 2, (canvas.height - grassImage.height) / 2 - player.image.height);
-}
-
 function collisionGrass() {
     return canvas.height - grassImage.height < player.y + player.image.height;
 }
@@ -139,7 +121,6 @@ function draw() {
     drawGrass();
     player.draw();
     drawScore();
-    drawGameState();
 
     requestAnimationFrame(draw);
 }
