@@ -1,14 +1,6 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-let jumpChannel = 0;
-let jumpSound = [document.getElementById("jump"), document.getElementById("jump2")];
-let failSound = document.getElementById("fail");
-let jumpVolume = 0.5;
-jumpSound[0].volume = jumpVolume;
-jumpSound[1].volume = jumpVolume;
-failSound.volume = jumpVolume * 2;
-
 let backgroundImage;
 let grassImage;
 
@@ -131,7 +123,6 @@ function draw() {
         player.move();
 
         if (collision()) {
-            failSound.play();
             gameState = GameStates.LOST;
         }
 
@@ -161,7 +152,6 @@ canvas.addEventListener("click", function () {
         }
         gameState = GameStates.PLAYING;
     }
-    jumpSound[jumpChannel++ % 2].play();
     player.jump();
 });
 
