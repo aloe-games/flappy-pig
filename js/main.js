@@ -23,16 +23,26 @@ let frame = 0;
 let step = 0;
 
 let agent = {
-    w: [[-0.099252, 0.577531], [-2.340253, -4.562271]],
-    b: [0.145681, -0.008051],
+    w: [[Math.random(), Math.random()], [Math.random(), Math.random()]],
+    b: [Math.random(), Math.random()],
     forward: function (observations, action) {
         return observations[0] * this.w[action][0] + observations[1] * this.w[action][1] + this.b[action]
     },
     act: function (observations) {
-        return this.forward(observations, 1) > this.forward(observations, 0);
+        return Number(this.forward(observations, 1) > this.forward(observations, 0));
     },
-    learn: function (observations, action, reward, next_observations) {
-        console.log(observations, action, reward, next_observations)
+    learn: function (observations, action, reward, next_observations, done) {
+        let z = this.forward(observations, action);
+        let y = reward + (1 - done) * 0.99 * Math.max(this.forward(next_observations, 0), this.forward(next_observations, 1));
+
+        let dz = z - y;
+        let dw = [observations[0] * dz, observations[1] * dz]
+        let db = dz
+
+        let alpha = 0.00005;
+        this.w[action][0] -= alpha * dw[0];
+        this.w[action][1] -= alpha * dw[1];
+        this.b[action] -= alpha * db;
     }
 };
 
@@ -119,9 +129,11 @@ function collision() {
 let prev_observations;
 let action;
 let reward;
+let done;
 
 function draw() {
     reward = 1;
+    done = 0;
     if (gameState === GameStates.PLAYING) {
         positionOffset += defaultDx;
         player.move();
@@ -129,6 +141,7 @@ function draw() {
         if (collision()) {
             gameState = GameStates.LOST;
             reward = -100;
+            done = 1;
         }
 
         if (player.x > cacti[score].x + cactusImage.width) {
@@ -136,6 +149,7 @@ function draw() {
             if (score === cacti.length) {
                 gameState = GameStates.WON;
                 reward = 100;
+                done = 1;
             }
         }
     }
@@ -152,7 +166,7 @@ function draw() {
         let observations = [cacti[score].x - (player.x + player.image.width), cacti[score].top + cacti[score].gap - (player.y + player.image.height)];
 
         if (prev_observations) {
-            agent.learn(prev_observations, action, reward, observations)
+            agent.learn(prev_observations, action, reward, observations, done)
         }
 
         action = agent.act(observations);
