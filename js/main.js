@@ -23,8 +23,7 @@ let frame = 0;
 let step = 0;
 
 let agent = {
-    w: [0., -1.],
-    b: 10.
+    w: [0., -1.], b: 10.
 };
 
 function resetGame() {
@@ -92,9 +91,7 @@ function collisionCactus() {
     let cactus = cacti[score];
     let cactusRadius = cactusImage.width / 2;
     let playerRadius = player.image.width / 2;
-    let rectCollision = player.x + player.image.width >= cactus.x &&
-        player.x <= cactus.x + cactusImage.width &&
-        (player.y <= cactus.top - cactusRadius || player.y + player.image.height >= cactus.top + cactus.gap + cactusRadius);
+    let rectCollision = player.x + player.image.width >= cactus.x && player.x <= cactus.x + cactusImage.width && (player.y <= cactus.top - cactusRadius || player.y + player.image.height >= cactus.top + cactus.gap + cactusRadius);
     let topMiddle = {x: cactus.x + cactusRadius, y: cactus.top - cactusRadius};
     let topDistance = Math.sqrt(Math.pow(player.x + playerRadius - topMiddle.x, 2) + Math.pow(player.y + playerRadius - topMiddle.y, 2));
     let bottomMiddle = {x: cactus.x + cactusRadius, y: cactus.top + cactus.gap + cactusRadius};
@@ -135,10 +132,7 @@ function draw() {
     }
 
     if (frame % 3 === 0) {
-        let observations = [
-            cacti[score].x - (player.x + player.image.width),
-            cacti[score].top + cacti[score].gap - (player.y + player.image.height)
-        ];
+        let observations = [cacti[score].x - (player.x + player.image.width), cacti[score].top + cacti[score].gap - (player.y + player.image.height)];
         let action = (observations[0] * agent.w[0] + observations[1] * agent.w[1] + agent.b) > 0.;
         if (action) {
             player.jump();
@@ -164,23 +158,16 @@ function startGame(images) {
     cactusReverseImage = images[4];
 
     player = {
-        x: 0,
-        y: 0,
-        dx: defaultDx,
-        dy: defaultDy,
-        move: function () {
+        x: 0, y: 0, dx: defaultDx, dy: defaultDy, move: function () {
             this.x += this.dx;
             this.y += this.dy;
 
             if (this.dy < defaultDy) {
                 this.dy += 0.5;
             }
-        },
-        image: images[2],
-        draw: function () {
+        }, image: images[2], draw: function () {
             ctx.drawImage(this.image, this.x - positionOffset, this.y);
-        },
-        jump: function () {
+        }, jump: function () {
             this.dy = -4 * defaultDy;
         }
     };
@@ -188,6 +175,22 @@ function startGame(images) {
     resetGame();
     generateCacti();
     draw();
+}
+
+function loadImages(imagePaths, callback) {
+    let images = [];
+    for (let i = 0; i < imagePaths.length; i++) {
+        images[i] = new Image();
+    }
+    for (let i = 0; i < imagePaths.length - 1; i++) {
+        images[i].onload = function () {
+            images[i + 1].src = imagePaths[i + 1];
+        }
+    }
+    images[imagePaths.length - 1].onload = function () {
+        callback(images)
+    };
+    images[0].src = imagePaths[0];
 }
 
 loadImages(["img/background.png", "img/grass.png", "img/player.png", "img/cactus.png", "img/cactus_revert.png"], startGame);
