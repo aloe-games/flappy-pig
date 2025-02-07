@@ -23,9 +23,15 @@ let frame = 0;
 let step = 0;
 
 let agent = {
-    w: [0., -1.], b: 10., act: function (observations) {
-        return (observations[0] * this.w[0] + observations[1] * this.w[1] + this.b) > 0.;
-    }, learn: function (observations, action, reward, next_observations) {
+    w: [[-0.099252, 0.577531], [-2.340253, -4.562271]],
+    b: [0.145681, -0.008051],
+    forward: function (observations, action) {
+        return observations[0] * this.w[action][0] + observations[1] * this.w[action][1] + this.b[action]
+    },
+    act: function (observations) {
+        return this.forward(observations, 1) > this.forward(observations, 0);
+    },
+    learn: function (observations, action, reward, next_observations) {
         console.log(observations, action, reward, next_observations)
     }
 };
