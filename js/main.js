@@ -23,7 +23,11 @@ let frame = 0;
 let step = 0;
 
 let agent = {
-    w: [0., -1.], b: 10.
+    w: [0., -1.], b: 10., act: function (observations) {
+        return (observations[0] * this.w[0] + observations[1] * this.w[1] + this.b) > 0.;
+    }, learn: function (observations, action, reward, next_observations) {
+        console.log(observations, action, reward, next_observations)
+    }
 };
 
 function resetGame() {
@@ -106,19 +110,26 @@ function collision() {
     return collisionGrass() || collisionSky() || collisionCactus();
 }
 
+let prev_observations;
+let action;
+let reward;
+
 function draw() {
+    reward = 1;
     if (gameState === GameStates.PLAYING) {
         positionOffset += defaultDx;
         player.move();
 
         if (collision()) {
             gameState = GameStates.LOST;
+            reward = -100;
         }
 
         if (player.x > cacti[score].x + cactusImage.width) {
             score++;
             if (score === cacti.length) {
                 gameState = GameStates.WON;
+                reward = 100;
             }
         }
     }
@@ -133,10 +144,17 @@ function draw() {
 
     if (frame % 3 === 0) {
         let observations = [cacti[score].x - (player.x + player.image.width), cacti[score].top + cacti[score].gap - (player.y + player.image.height)];
-        let action = (observations[0] * agent.w[0] + observations[1] * agent.w[1] + agent.b) > 0.;
+
+        if (prev_observations) {
+            agent.learn(prev_observations, action, reward, observations)
+        }
+
+        action = agent.act(observations);
         if (action) {
             player.jump();
         }
+
+        prev_observations = observations
         step++;
     }
 
