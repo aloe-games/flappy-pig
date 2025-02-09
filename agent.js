@@ -14,7 +14,7 @@ class Agent {
     }
 
     act(observation) {
-        return Number(this.forward(observation, 1) > this.forward(observation, 0));
+        return this.forward(observation, 1) > this.forward(observation, 0) ? 1 : 0;
     }
 
     learn(observation, action, reward, next_observation, done) {
