@@ -31,7 +31,7 @@ function resetGame() {
     done = 0;
 }
 
-let cactusCount = 10;
+let cactusCount = 100;
 let cactuses = [];
 
 function generateCactuses() {
