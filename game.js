@@ -16,7 +16,7 @@ let defaultDy = 2;
 let defaultDx = 3;
 let player;
 
-let agent = new Agent();
+let agent = new Agent(2, 2);
 let action;
 let reward;
 let done;

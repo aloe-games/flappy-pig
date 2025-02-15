@@ -1,7 +1,7 @@
 class Agent {
-    constructor() {
-        this.w = [[gaussian(), gaussian()], [gaussian(), gaussian()]];
-        this.b = [[gaussian()], [gaussian()]];
+    constructor(observation, action) {
+        this.w = random(action, observation);
+        this.b = random(action, 1);
         this.gamma = 0.99;
         this.alpha = 0.00005;
     }

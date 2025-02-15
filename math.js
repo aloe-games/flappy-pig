@@ -5,6 +5,17 @@ function gaussian(mean = 0, stdev = 1) {
     return z * stdev + mean;
 }
 
+function random(x, y) {
+    let r = new Array(x);
+    for (let i = 0; i < x; i++) {
+        r[i] = new Array(y);
+        for (let j = 0; j < y; j++) {
+            r[i][j] = gaussian();
+        }
+    }
+    return r;
+}
+
 function mul(a, x) {
     let c = new Array(a.length);
     for (let i = 0; i < a.length; i++) {
