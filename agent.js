@@ -1,10 +1,10 @@
 class Agent {
     constructor() {
         this.w = [
-            [Math.random(), Math.random()],
-            [Math.random(), Math.random()]
+            [gaussian(), gaussian()],
+            [gaussian(), gaussian()]
         ];
-        this.b = [Math.random(), Math.random()];
+        this.b = [gaussian(), gaussian()];
         this.gamma = 0.99;
         this.alpha = 0.00005;
     }
