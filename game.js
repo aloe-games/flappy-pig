@@ -16,22 +16,22 @@ let defaultDy = 2;
 let defaultDx = 3;
 let player;
 
-let frame = 0;
-let step = 0;
-
 let agent = new Agent();
+let action;
+let reward;
+let done;
+let observation;
 
 function resetGame() {
     positionOffset = 0;
     score = 0;
     player.x = (canvas.width - player.image.width) / 2;
     player.y = (canvas.height - grassImage.height - player.image.height) / 2;
-    frame = 0;
-    step = 0;
     generateCactuses();
+    done = 0;
 }
 
-let cactusCount = 100;
+let cactusCount = 10;
 let cactuses = [];
 
 function generateCactuses() {
@@ -100,24 +100,30 @@ function collision() {
     return collisionGrass() || collisionSky() || collisionCactus();
 }
 
-let prev_observation;
-let action;
-let reward;
-let done;
+function getObservation() {
+    let obstacle = cactuses[Math.min(score, cactuses.length - 1)];
+    return [
+        obstacle.x - (player.x + player.image.width),
+        obstacle.top + obstacle.gap - (player.y + player.image.height)
+    ];
+}
 
 function draw() {
-    reward = 1;
-    done = 0;
-
     if (!done) {
+        observation = getObservation();
+        action = agent.act(observation);
+        if (action) {
+            player.jump();
+        }
+
         positionOffset += defaultDx;
         player.move();
 
+        reward = 1;
         if (collision()) {
-            reward = -100;
             done = 1;
+            reward = -100;
         }
-
         if (player.x > cactuses[score].x + cactusImage.width) {
             score++;
             if (score === cactuses.length) {
@@ -126,28 +132,10 @@ function draw() {
         }
     }
 
+    agent.learn(observation, action, reward, getObservation(), done);
+
     if (done) {
         resetGame();
-    }
-
-    if (frame % 3 === 0) {
-        let obstacle = cactuses[score];
-        let observation = [
-            obstacle.x - (player.x + player.image.width),
-            obstacle.top + obstacle.gap - (player.y + player.image.height)
-        ];
-
-        if (prev_observation) {
-            agent.learn(prev_observation, action, reward, observation, done);
-        }
-
-        action = agent.act(observation);
-        if (action) {
-            player.jump();
-        }
-
-        prev_observation = observation;
-        step++;
     }
 
     drawBackground();
@@ -155,8 +143,6 @@ function draw() {
     drawGrass();
     player.draw();
     drawScore();
-
-    frame++;
     requestAnimationFrame(draw);
 }
 
