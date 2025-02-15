@@ -4,13 +4,16 @@ class Agent {
             [gaussian(), gaussian()],
             [gaussian(), gaussian()]
         ];
-        this.b = [gaussian(), gaussian()];
+        this.b = [
+            [gaussian()],
+            [gaussian()]
+        ];
         this.gamma = 0.99;
         this.alpha = 0.00005;
     }
 
     forward(observation, action) {
-        return observation[0] * this.w[action][0] + observation[1] * this.w[action][1] + this.b[action];
+        return dot(observation, this.w[action]) + this.b[action][0];
     }
 
     act(observation) {
@@ -22,11 +25,10 @@ class Agent {
         let y = reward + (1 - done) * this.gamma * Math.max(this.forward(next_observation, 0), this.forward(next_observation, 1));
 
         let dz = z - y;
-        let dw = [observation[0] * dz, observation[1] * dz]
-        let db = dz
+        let dw = mul(observation, dz);
+        let db = [dz];
 
-        this.w[action][0] -= this.alpha * dw[0];
-        this.w[action][1] -= this.alpha * dw[1];
-        this.b[action] -= this.alpha * db;
+        add_(this.w[action], mul(dw, -this.alpha));
+        add_(this.b[action], mul(db, -this.alpha));
     }
 }
