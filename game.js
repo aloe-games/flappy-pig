@@ -69,7 +69,7 @@ function drawCactuses() {
 }
 
 function drawScore() {
-    ctx.font = "bold 32px Trebuchet MS";
+    ctx.font = "bold 32px sans-serif";
     ctx.fillStyle = "white";
     ctx.textAlign = "right";
     ctx.fillText(score.toString(), canvas.width - 8, 32);
